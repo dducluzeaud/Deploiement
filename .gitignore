@@ -101,3 +101,6 @@ ENV/
 .mypy_cache/
 
 .DS_STORE
+
+purbeurre_project/settings/production.py
+purbeurre_project/staticfiles/
