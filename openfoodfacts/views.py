@@ -8,27 +8,17 @@ from django.contrib.auth.decorators import login_required
 from .forms import SignUpForm
 from .models import Products, Substitutes
 
-import logging
-
 
 IMG = 'https://authentic-visit.jp/wp-content/uploads/2017/12/gregoire-jeanneau-1451361.jpg'
 
 def index(request):
     context = {
-    "page_title" : "Accueil"
+        "page_title": "Accueil"
     }
     return render(request, 'openfoodfacts/index.html')
 
 
 def search(request):
-    # Get an instance of a logger
-    logger = logging.getLogger(__name__)
-
-    # Optionally pass a request and we'll grab any information we can
-    logger.info('New search', exc_info=True, extra={
-        'request': request,
-    })
-
     query = request.GET.get('query')
 
     # query match product_name
