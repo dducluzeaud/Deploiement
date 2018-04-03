@@ -3,6 +3,7 @@ from django.urls import reverse
 from openfoodfacts.models import Products, Categories, Substitutes, User
 from openfoodfacts.forms import UserCreationForm
 
+
 class IndexPageTestCase(TestCase):
     def test_index_page(self):
         response = self.client.get(reverse('index'))
@@ -24,7 +25,7 @@ class ContactsPageTestCase(TestCase):
 class DetailPageTestCase(TestCase):
     def setUp(self):
         category = Categories.objects.create(category_name="Pâte à tartiner")
-        nutella = Products.objects.create(
+        Products.objects.create(
             id_product=1,
             product_name="nutella",
             category=category
@@ -47,38 +48,41 @@ class DetailPageTestCase(TestCase):
 class SearchPageTestCase(TestCase):
     def setUp(self):
         category = Categories.objects.create(category_name="Pâte à tartiner")
-        origin = Products.objects.create(
+        Products.objects.create(
             id_product=1,
             product_name="nutella",
             category=category
             )
 
-        replacement = Products.objects.create(
+        Products.objects.create(
             id_product=2,
             product_name="Nocciolata",
             category=category
         )
-        self.password="1234abcd"
-        self.user = User.objects.create_user(username="david", password=self.password, email="email@email.com")
+        self.password = "1234abcd"
+        self.user = User.objects.create_user(
+            username="david",
+            password=self.password,
+            email="email@email.com")
+
         self.client = Client()
         self.origin = Products.objects.get(pk=1)
         self.replacement = Products.objects.get(pk=2)
         self.client.force_login(user=self.user)
 
-
-    #test that detail page returns a 200 if the item exists
+    # test that detail page returns a 200 if the item exists
     def test_search_page_returns_200(self):
         response = self.client.get(reverse('openfoodfacts:search'), {"query": "nutella"})
         self.assertEqual(response.status_code, 200)
 
-    #test that detail page returns a 200 if the item exists
+    # test that detail page returns a 200 if the item exists
     def test_search_page_returns_404(self):
         response = self.client.get(reverse('openfoodfacts:search'), {"query": "kiri"})
         self.assertEqual(response.status_code, 404)
 
     def test_search_replace_product(self):
         url = reverse('openfoodfacts:search') + '?query=nutella'
-        response = self.client.post(url, {
+        self.client.post(url, {
             "origin": self.origin.id_product,
             "replacement": self.replacement.id_product,
             })
@@ -96,7 +100,7 @@ class RegisterTestPageCase(TestCase):
             'password2': 'abcdef123456'
         }
 
-        self.home_url=(reverse('openfoodfacts:account'))
+        self.home_url = (reverse('openfoodfacts:account'))
         self.response = self.client.post(url, data)
 
     def test_register_page_returns_200(self):
@@ -149,7 +153,10 @@ class LoginTestPageCase(TestCase):
     def setUp(self):
         self.username = "test"
         self.password = hash("1234abcd")
-        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.user = User.objects.create_user(
+            username=self.username,
+            password=self.password
+            )
 
     def test_login_page(self):
         response = self.client.get(reverse('openfoodfacts:login'))
@@ -197,14 +204,14 @@ class AccountTestPageCase(TestCase):
         response = self.client.get(reverse('openfoodfacts:account'))
         self.assertEqual(response.status_code, 200)
 
-    def test_"_page_redirects(self):
+    def test_page_redirects(self):
         response = self.client.get(reverse('openfoodfacts:account'))
         self.assertEqual(response.status_code, 302)
 
 
-class "TestPageCase(TestCase):
+class TestSavedPageCase(TestCase):
     def setUp(self):
-        url = reverse('openfoodfacts:"')
+        url = reverse('openfoodfacts:saved')
         self.data = {
             'username': 'john',
             'email': 'john@doe.com',
@@ -235,18 +242,18 @@ class "TestPageCase(TestCase):
         self.origin = Products.objects.get(pk=1)
         self.replacement = Products.objects.get(pk=2)
 
-    def test_account_page_returns_200(self):
+    def test_saved_page_returns_200(self):
         self.client.login(**self.data)
-        response = self.client.get(reverse('openfoodfacts:"'))
+        response = self.client.get(reverse('openfoodfacts:saved'))
         self.assertEqual(response.status_code, 200)
 
-    def test_account_page_redirects(self):
-        response = self.client.get(reverse('openfoodfacts:"'))
+    def test_saved_page_redirects(self):
+        response = self.client.get(reverse('openfoodfacts:saved'))
         self.assertEqual(response.status_code, 302)
 
     def test_delete_substitute(self):
         self.client.login(**self.data)
-        response = self.client.post(reverse('openfoodfacts:"'), {
+        self.client.post(reverse('openfoodfacts:saved'), {
             "origin": self.origin.id_product,
             "replacement": self.replacement.id_product,
             })
