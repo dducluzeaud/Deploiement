@@ -58,6 +58,11 @@ def search(request):
 
     # user want to save a product
     if request.user.is_authenticated and request.method == 'POST':
+        # log for saved product
+        logger.info('New saved', exc_info=True, extra={
+                'request': request,
+            })
+
         origin = request.POST.get('origin')
         replacement = request.POST.get('replacement')
 
