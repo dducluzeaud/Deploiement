@@ -8,8 +8,12 @@ from django.contrib.auth.decorators import login_required
 from .forms import SignUpForm
 from .models import Products, Substitutes
 
+import logging
 
 IMG = 'https://authentic-visit.jp/wp-content/uploads/2017/12/gregoire-jeanneau-1451361.jpg'
+
+# get an instoance of the logger
+logger = logging.getLogger(__name__)
 
 def index(request):
     context = {
@@ -19,6 +23,11 @@ def index(request):
 
 
 def search(request):
+    # Log for new search
+    logger.info('New search', exc_info=True, extra={
+        'request': request,
+    })
+
     query = request.GET.get('query')
 
     # query match product_name
@@ -196,9 +205,15 @@ def legals(request):
 
 @login_required
 def saved(request):
+
     products_saved = Substitutes.objects.filter(user=request.user)
 
     if request.method == 'POST':
+
+	# log for element deleted
+        logger.info('Delete product', exc_info=True, extra={
+            'request': request,
+        })
         origin = request.POST.get('origin')
         replacement = request.POST.get('replacement')
 
